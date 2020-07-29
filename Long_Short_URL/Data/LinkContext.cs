@@ -12,8 +12,6 @@ namespace Long_Short_URL.Models
         public DbSet<Link> Links { get; set; }
         public LinkContext(DbContextOptions<LinkContext> options)  : base(options)
         {
-            // Создание бд.
-            Database.EnsureCreated();
         }
     }
 }

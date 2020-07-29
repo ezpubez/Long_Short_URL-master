@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Long_Short_URL.Models;
 using Microsoft.AspNetCore.Builder;
@@ -10,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Long_Short_URL
 {
@@ -27,6 +29,7 @@ namespace Long_Short_URL
         {
             // Получаем строку подключения из файла конфигурации.
             string connection = Configuration.GetConnectionString("DefaultConnection");
+            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             // Добавляем контекст MobileContext в качестве сервиса в приложение.
             services.AddDbContext<LinkContext>(options =>
                 options.UseMySql(connection));
@@ -34,8 +37,10 @@ namespace Long_Short_URL
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
+            // this will do the initial DB population
+            InitializeDatabase(app);
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -59,6 +64,15 @@ namespace Long_Short_URL
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+        // Инициализация бд.
+        private void InitializeDatabase(IApplicationBuilder app)
+        {
+            using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                // Миграции.
+                scope.ServiceProvider.GetRequiredService<LinkContext>().Database.Migrate();
+            }
         }
     }
 }
