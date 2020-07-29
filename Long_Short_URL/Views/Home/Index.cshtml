@@ -1,0 +1,18 @@
+﻿@model IEnumerable<Long_Short_URL.Models.Link>
+
+@{ ViewBag.Title = "Все ссылки"; }
+
+<table class="table">
+    <tr><td>Длинная ссылка</td><td>Короткая ссылка</td><td>Дата</td></tr>
+    @foreach (var item in Model)
+    {
+<tr>
+    <td><a href=@item.LongUrl>@item.LongUrl</a></td>
+    <td><a href=@Environment.GetEnvironmentVariable("BaseURL")/Redirect/Rdrc/@item.ShortUrl>@Environment.GetEnvironmentVariable("BaseURL") /Redirect/Rdrc/@item.ShortUrl</a></td>
+    <td>@item.Date</td>
+    <td>
+        <a asp-action="Delete" asp-controller="Home" asp-route-id="@item.Id">Удалить</a>
+    </td>
+</tr>
+}
+</table>

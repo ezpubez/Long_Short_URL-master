@@ -1,0 +1,21 @@
+﻿@model IEnumerable<Long_Short_URL.Models.Link>
+@{
+    ViewBag.Title = "Редактирование ссылку";
+}
+    <table class="table">
+        <div class="jumbotron text-center">
+            <a class="btn btn-primary btn-lg" asp-action="Create" asp-controller="Createedit">Создать ссылку</a>
+        </div>
+            <tr><td>Длинная ссылка</td><td>Короткая ссылка</td><td>Дата</td></tr>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td><a href=@item.LongUrl>@item.LongUrl</a></td>
+                    <td><a href=@Environment.GetEnvironmentVariable("BaseURL")/Redirect/Rdrc/@item.ShortUrl>@Environment.GetEnvironmentVariable("BaseURL") /Redirect/Rdrc/@item.ShortUrl</a></td>
+                    <td>@item.Date</td>
+                    <td>
+                        <a asp-action="Edit" asp-controller="Createedit" asp-route-id="@item.Id">Редактировать</a>
+                    </td>
+                </tr>
+            }
+    </table>
